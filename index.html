@@ -3,278 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NullOS // Advanced Image Recon Console</title>
+    <title>NullOS // Parallel Image Aggregator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <style>
         body {
-            background-color: #070709;
-            color: #d4d4d8;
+            background-color: #060608;
+            color: #f4f4f5;
             font-family: 'Courier New', Courier, monospace;
         }
         .glow-blue:focus-within {
-            border-color: #2563eb;
-            box-shadow: 0 0 15px rgba(37, 99, 235, 0.3);
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
         }
-        .terminal-scroll::-webkit-scrollbar {
-            width: 4px;
+        .scroll-custom::-webkit-scrollbar {
+            width: 5px;
         }
-        .terminal-scroll::-webkit-scrollbar-thumb {
+        .scroll-custom::-webkit-scrollbar-thumb {
             background: #27272a;
-            border-radius: 2px;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-4 md:p-6">
+<body class="min-h-screen p-4 md:p-6 flex flex-col justify-between">
 
-    <header class="w-full max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 pb-4 mb-6 gap-2">
+    <!-- Global Console Header -->
+    <header class="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-900 pb-4 mb-6 gap-4">
         <div>
-            <h1 class="text-xl font-bold tracking-widest text-blue-500">NULL_OS // IMAGE_RECON_V2</h1>
-            <p class="text-xs text-zinc-500">Biometric Tracking & Exif Metadata Extraction Module</p>
+            <h1 class="text-xl font-bold tracking-widest text-blue-500">NULL_OS // MULTI_RECON_MATRIX</h1>
+            <p class="text-xs text-zinc-500">Asynchronous Concurrent Biometric & Visual Parsing Node</p>
         </div>
-        <div class="flex items-center gap-3">
-            <div id="meta-status" class="text-[10px] text-zinc-500 font-mono">PARSER_IDLE</div>
-            <span class="px-2.5 py-0.5 rounded text-xs font-mono bg-blue-950/40 text-blue-400 border border-blue-900/50 animate-pulse">
-                SYS_ACTIVE
-            </span>
+        
+        <!-- Multi-Token Credentials Matrix Vault -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-zinc-950 p-2 border border-zinc-900 rounded w-full md:w-auto">
+            <div>
+                <label class="block text-[8px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">FaceCheck Key</label>
+                <input type="password" id="key-facecheck" placeholder="FC_XYZ..." class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[10px] text-zinc-400 focus:outline-none focus:border-red-600 font-mono w-full sm:w-36">
+            </div>
+            <div>
+                <label class="block text-[8px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">Serper (Lens) Key</label>
+                <input type="password" id="key-serper" placeholder="SRP_ABC..." class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[10px] text-zinc-400 focus:outline-none focus:border-blue-600 font-mono w-full sm:w-36">
+            </div>
+            <div>
+                <label class="block text-[8px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">PimEyes Webhook/API</label>
+                <input type="password" id="key-pimeyes" placeholder="PIM_123..." class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[10px] text-zinc-400 focus:outline-none focus:border-purple-600 font-mono w-full sm:w-36">
+            </div>
         </div>
     </header>
 
-    <main class="w-full max-w-6xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Main Workspace Frame -->
+    <main class="w-full max-w-7xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-7 flex flex-col gap-4">
+        <!-- Input Staging Dashboard Panel (3 Columns) -->
+        <div class="lg:col-span-3 flex flex-col gap-4">
             
-            <div id="dropzone" class="flex-grow border border-zinc-800 rounded relative flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-950/5 transition-all min-h-[280px]">
-                <div id="dropzone-content" class="space-y-3 z-10">
-                    <div class="w-12 h-12 rounded bg-zinc-900 flex items-center justify-center mx-auto border border-zinc-800">
-                        <svg class="h-6 w-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                    </div>
-                    <div class="text-xs tracking-wide">
-                        <span class="text-blue-400 font-bold">DRAG TARGET FILE HERE</span> OR CLICK TO MOUNT
-                    </div>
-                    <p class="text-[10px] text-zinc-600 uppercase">RAW Image Binaries Accepted (JPG, PNG, WEBP)</p>
-                </div>
+            <!-- Staging Cache Drag & Drop Area -->
+            <div id="dropzone" class="border border-zinc-800 bg-zinc-900/10 rounded p-6 text-center cursor-pointer hover:border-blue-500/40 hover:bg-blue-950/5 transition-all flex flex-col justify-center items-center min-h-[220px]">
                 <input type="file" id="file-input" class="hidden" accept="image/*">
-                <img id="preview" class="hidden max-h-60 rounded border border-zinc-800 mx-auto object-contain z-10 shadow-2xl">
+                <div id="dropzone-text" class="space-y-2">
+                    <div class="text-zinc-400 text-xs font-bold uppercase tracking-widest">Stage Target File</div>
+                    <p class="text-[9px] text-zinc-600 font-mono">DRAG BINARY / CLICK INTERFACE</p>
+                </div>
+                <img id="preview" class="hidden max-h-44 rounded border border-zinc-800 object-contain mx-auto shadow-xl">
             </div>
 
-            <div class="bg-zinc-950 border border-zinc-800 rounded p-4">
-                <div class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 border-b border-zinc-900 pb-2 flex justify-between">
-                    <span>⚡ Extracted Exif Metadata Intel</span>
-                    <span id="coord-badge" class="text-emerald-500 hidden text-[10px]">GPS DATA FOUND</span>
+            <!-- Global Action Trigger Console -->
+            <div class="bg-zinc-950 border border-zinc-900 rounded p-4 space-y-3">
+                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">Pipeline Directives</div>
+                
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="use-simulator" class="bg-zinc-900 border-zinc-800 rounded text-blue-500 focus:ring-0" checked>
+                    <label for="use-simulator" class="text-[10px] text-zinc-400 font-mono uppercase cursor-pointer selection:bg-transparent">Fallback to Sandbox Simulation if Keys Empty</label>
                 </div>
-                <div id="metadata-log" class="text-[11px] font-mono text-zinc-500 space-y-1 max-h-32 overflow-y-auto terminal-scroll">
-                    <span class="text-zinc-600">[info]</span> Awaiting target initialization... drop file to analyze deep camera strings, dates, and embedded geolocations.
-                </div>
-            </div>
 
-            <div class="bg-zinc-900/30 border border-zinc-800 rounded p-3 glow-blue">
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1.5">Direct URL Mapping (Required for Automated External Queries)</label>
-                <div class="flex gap-2">
-                    <input type="text" id="url-input" placeholder="https://domain.com/path/to/target.jpg" class="flex-grow bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 text-zinc-300 font-mono">
-                    <button id="clear-btn" class="px-3 bg-zinc-800 hover:bg-zinc-700 text-xs rounded transition-colors uppercase tracking-wider text-zinc-400">Reset</button>
-                </div>
+                <button id="broadcast-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded transition-all tracking-widest shadow-lg shadow-blue-600/10 border border-blue-500/20">
+                    CONCURRENT MULTI-SEARCH
+                </button>
             </div>
         </div>
 
-        <div class="lg:col-span-5 flex flex-col gap-4">
+        <!-- Unified Parallel Target Results Terminal (9 Columns) -->
+        <div class="lg:col-span-9 flex flex-col border border-zinc-900 bg-zinc-950/40 rounded p-4 min-h-[480px]">
             
-            <div class="bg-zinc-900/20 border border-zinc-800 rounded p-4">
-                <h2 class="text-xs font-bold uppercase tracking-widest text-red-500 mb-3 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
-                    TIER 1 // Biometric Social Engines
-                </h2>
-                <div class="grid grid-cols-1 gap-2">
-                    <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
-                        <div>
-                            <div class="text-xs font-bold text-zinc-300">FaceCheck.ID</div>
-                            <div class="text-[10px] text-zinc-600">Maps faces straight to Social Profiles</div>
-                        </div>
-                        <button onclick="launchSearch('facecheck')" class="px-3 py-1 bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-400 font-bold text-[10px] rounded transition-all uppercase">Launch</button>
-                    </div>
-                    <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
-                        <div>
-                            <div class="text-xs font-bold text-zinc-300">PimEyes Radar</div>
-                            <div class="text-[10px] text-zinc-600">Deep web blog, forum, and article crawler</div>
-                        </div>
-                        <button onclick="launchSearch('pimeyes')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 font-bold text-[10px] rounded transition-all uppercase">Launch</button>
-                    </div>
+            <!-- Output Header & Monitor Feeds -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-900 pb-3 mb-4 gap-2">
+                <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                    📡 Unified Intercept Stream (<span id="total-count" class="text-blue-400">0</span> Matches Aggregated)
+                </div>
+                <!-- Mini Real-time Diagnostics Monitor -->
+                <div id="diagnostics" class="flex gap-3 text-[9px] font-mono">
+                    <span id="status-fc" class="text-zinc-600">FACECHECK: IDLE</span>
+                    <span id="status-srp" class="text-zinc-600">SERPER_LENS: IDLE</span>
+                    <span id="status-pim" class="text-zinc-600">PIMEYES: IDLE</span>
                 </div>
             </div>
 
-            <div class="bg-zinc-900/20 border border-zinc-800 rounded p-4 flex-grow flex flex-col justify-between">
-                <div>
-                    <h2 class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-3">TIER 2 // Deep Reverse Scanners</h2>
-                    <div class="space-y-2">
-                        <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
-                            <div>
-                                <span class="text-xs font-bold text-zinc-300 block">Yandex Visual AI</span>
-                                <span class="text-[10px] text-zinc-600">Highest non-social matching accuracy</span>
-                            </div>
-                            <button onclick="launchSearch('yandex')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] rounded transition-all uppercase">Query</button>
-                        </div>
-                        <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
-                            <div>
-                                <span class="text-xs font-bold text-zinc-300 block">Google Lens Engine</span>
-                                <span class="text-[10px] text-zinc-600">Matches outfits, locations, items</span>
-                            </div>
-                            <button onclick="launchSearch('google')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-[10px] rounded transition-all uppercase">Query</button>
-                        </div>
-                        <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
-                            <div>
-                                <span class="text-xs font-bold text-zinc-300 block">Bing Visual Recon</span>
-                                <span class="text-[10px] text-zinc-600">Scrapes secondary isolated site indexes</span>
-                            </div>
-                            <button onclick="launchSearch('bing')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-[10px] rounded transition-all uppercase">Query</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-4 p-2.5 bg-zinc-950 border border-zinc-900 rounded text-[10px] text-zinc-600 font-mono space-y-1">
-                    <div class="text-zinc-400 font-bold uppercase text-[9px] tracking-wider">Operational Sequence:</div>
-                    <p>1. Drop photo to check hidden device metadata.</p>
-                    <p>2. Paste web link if performing bulk multi-engine automated queries.</p>
+            <!-- Dynamic Aggregated Image Content Feed Grid -->
+            <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 flex-grow overflow-y-auto max-h-[620px] pr-2 scroll-custom">
+                <!-- Idle State Template Placeholders -->
+                <div id="empty-state" class="col-span-full flex flex-col items-center justify-center text-center p-16 text-zinc-600 space-y-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-zinc-800 animate-ping mb-2"></div>
+                    <p class="text-xs font-mono uppercase tracking-wider">Awaiting Concurrent Pipeline Ignition Protocol...</p>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <footer class="w-full max-w-6xl mx-auto text-center text-[9px] text-zinc-700 mt-6 border-t border-zinc-900 pt-4 font-mono tracking-widest">
-        SYSTEM: NULLOS_INTEL_MODULE // CONSOLE ENGAGED
+    <!-- Footer System Log Line -->
+    <footer class="w-full max-w-7xl mx-auto text-center text-[9px] text-zinc-700 mt-6 pt-4 border-t border-zinc-950 font-mono tracking-widest">
+        SYSTEM LAYER: CONCURRENT_DAEMON_V3 // ACTIVE PIPELINE
     </footer>
 
+    <!-- Core Parallel Processing Automation Assembly Script -->
     <script>
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('file-input');
-        const urlInput = document.getElementById('url-input');
         const preview = document.getElementById('preview');
-        const dropzoneContent = document.getElementById('dropzone-content');
-        const clearBtn = document.getElementById('clear-btn');
-        const metadataLog = document.getElementById('metadata-log');
-        const metaStatus = document.getElementById('meta-status');
-        const coordBadge = document.getElementById('coord-badge');
+        const dropzoneText = document.getElementById('dropzone-text');
+        const broadcastBtn = document.getElementById('broadcast-btn');
+        const resultsGrid = document.getElementById('results-grid');
+        const emptyState = document.getElementById('empty-state');
+        const totalCount = document.getElementById('total-count');
+        const useSimulator = document.getElementById('use-simulator');
 
-        // Click trigger
+        // Status monitors
+        const statusFc = document.getElementById('status-fc');
+        const statusSrp = document.getElementById('status-srp');
+        const statusPim = document.getElementById('status-pim');
+
+        let stagedBinaryFile = null;
+
+        // Mounting behaviors
         dropzone.addEventListener('click', () => fileInput.click());
-
-        // Drag behaviors
-        ['dragenter', 'dragover'].forEach(name => {
-            dropzone.addEventListener(name, (e) => {
-                e.preventDefault();
-                dropzone.classList.add('border-blue-500', 'bg-blue-950/10');
-            });
-        });
-
-        ['dragleave', 'drop'].forEach(name => {
-            dropzone.addEventListener(name, (e) => {
-                e.preventDefault();
-                dropzone.classList.remove('border-blue-500', 'bg-blue-950/10');
-            });
-        });
-
-        dropzone.addEventListener('drop', (e) => {
-            const files = e.dataTransfer.files;
-            if (files.length) processFile(files[0]);
-        });
-
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) processFile(e.target.files[0]);
+            if (e.target.files.length) bindTargetFile(e.target.files[0]);
         });
 
-        // Core File Processor and EXIF Parser
-        function processFile(file) {
+        function bindTargetFile(file) {
             if (!file.type.startsWith('image/')) return;
-            metaStatus.innerText = "PROCESSING_FILE...";
-            coordBadge.classList.add('hidden');
-
+            stagedBinaryFile = file;
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onloadend = () => {
                 preview.src = reader.result;
                 preview.classList.remove('hidden');
-                dropzoneContent.classList.add('hidden');
-                
-                // Fire Exif Extraction
-                EXTRACT_EXIF_DATA(file);
+                dropzoneText.classList.add('hidden');
             };
         }
 
-        function EXTRACT_EXIF_DATA(file) {
-            EXIF.getData(file, function() {
-                const allData = EXIF.getAllTags(this);
-                if (Object.keys(allData).length === 0) {
-                    metadataLog.innerHTML = `<span class="text-yellow-600">[warning]</span> Binary stripped clean. No embedded Exif header data found inside file strings.`;
-                    metaStatus.innerText = "PARSER_CLEAN";
-                    return;
-                }
+        // The Asynchronous Concurrent Broadcaster Core
+        broadcastBtn.addEventListener('click', async () => {
+            if (!stagedBinaryFile && !useSimulator.checked) {
+                alert("CRITICAL: Staging terminal buffer empty. Mount a target image file.");
+                return;
+            }
 
-                let output = `<span class="text-blue-500">[extracted]</span> Analysis successful:<br>`;
-                if (allData.Make || allData.Model) output += ` > DEVICE: ${allData.Make || ''} ${allData.Model || ''}<br>`;
-                if (allData.DateTime) output += ` > TIMESTAMP: ${allData.DateTime}<br>`;
-                if (allData.Software) output += ` > SOFTWARE_EDITS: ${allData.Software}<br>`;
+            // Purge old visual grid states
+            emptyState.classList.add('hidden');
+            resultsGrid.querySelectorAll('.result-card').forEach(el => el.remove());
+            totalCount.innerText = "0";
 
-                // Check GPS coordinates
-                if (allData.GPSLatitude && allData.GPSLongitude) {
-                    coordBadge.classList.remove('hidden');
-                    const lat = convertDMSToDD(allData.GPSLatitude, allData.GPSLatitudeRef);
-                    const lon = convertDMSToDD(allData.GPSLongitude, allData.GPSLongitudeRef);
-                    output += ` <span class="text-emerald-400">>>>> COORDS LOCATED: ${lat.toFixed(6)}, ${lon.toFixed(6)}</span><br>`;
-                    output += ` > MAP LINK: <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" class="text-blue-400 underline hover:text-blue-300">Open Satellite Map Position</a><br>`;
+            // Initialize thread diagnostic monitors
+            updateStatus(statusFc, "QUERYING...", "text-yellow-500 font-bold");
+            updateStatus(statusSrp, "QUERYING...", "text-yellow-500 font-bold");
+            updateStatus(statusPim, "QUERYING...", "text-yellow-500 font-bold");
+
+            const fcKey = document.getElementById('key-facecheck').value.trim();
+            const srpKey = document.getElementById('key-serper').value.trim();
+            const pimKey = document.getElementById('key-pimeyes').value.trim();
+
+            // Construct our independent execution promises for parallel execution array
+            const executionThreads = [];
+
+            // Thread 1: FaceCheck.id API Interface
+            if (fcKey) {
+                executionThreads.push(runFaceCheckPipeline(stagedBinaryFile, fcKey).then(res => ({ engine: 'FaceCheck.ID', status: 'success', data: res })).catch(err => ({ engine: 'FaceCheck.ID', status: 'error', msg: err.message })));
+            } else {
+                updateStatus(statusFc, "SKIPPED (NO KEY)", "text-zinc-600");
+            }
+
+            // Thread 2: Google Lens API via Serper Network Interface
+            if (srpKey) {
+                executionThreads.push(runSerperLensPipeline(stagedBinaryFile, srpKey).then(res => ({ engine: 'Serper (Lens)', status: 'success', data: res })).catch(err => ({ engine: 'Serper (Lens)', status: 'error', msg: err.message })));
+            } else {
+                updateStatus(statusSrp, "SKIPPED (NO KEY)", "text-zinc-600");
+            }
+
+            // Thread 3: PimEyes Target API Pipeline
+            if (pimKey) {
+                executionThreads.push(runPimEyesPipeline(stagedBinaryFile, pimKey).then(res => ({ engine: 'PimEyes Engine', status: 'success', data: res })).catch(err => ({ engine: 'PimEyes Engine', status: 'error', msg: err.message })));
+            } else {
+                updateStatus(statusPim, "SKIPPED (NO KEY)", "text-zinc-600");
+            }
+
+            // Add simulated thread block if fallback checkbox matches empty state
+            if (useSimulator.checked && executionThreads.length === 0) {
+                updateStatus(statusFc, "SIMULATOR_OPEN", "text-blue-400");
+                updateStatus(statusSrp, "SIMULATOR_OPEN", "text-blue-400");
+                updateStatus(statusPim, "SIMULATOR_OPEN", "text-blue-400");
+                executionThreads.push(runMatrixSandboxSimulation().then(res => ({ engine: 'Sandbox Simulator Matrix', status: 'success', data: res })));
+            }
+
+            // Fire all operations concurrently! 
+            const settledResults = await Promise.all(executionThreads);
+
+            let masterAggregationPool = [];
+
+            settledResults.forEach(thread => {
+                if (thread.status === 'success') {
+                    // Update diagnostics tracker to show success state
+                    if (thread.engine.includes('FaceCheck')) updateStatus(statusFc, "COMPLETED", "text-emerald-400");
+                    if (thread.engine.includes('Serper')) updateStatus(statusSrp, "COMPLETED", "text-emerald-400");
+                    if (thread.engine.includes('PimEyes')) updateStatus(statusPim, "COMPLETED", "text-emerald-400");
+                    
+                    masterAggregationPool = masterAggregationPool.concat(thread.data);
                 } else {
-                    output += ` > GEOLOCATION: Missing or stripped from headers.<br>`;
+                    // One engine failed but the network stack stays up
+                    console.error(`Thread failure on engine ${thread.engine}:`, thread.msg);
+                    if (thread.engine.includes('FaceCheck')) updateStatus(statusFc, "FAILED/AUTH", "text-red-500 font-bold");
+                    if (thread.engine.includes('Serper')) updateStatus(statusSrp, "FAILED/AUTH", "text-red-500 font-bold");
+                    if (thread.engine.includes('PimEyes')) updateStatus(statusPim, "FAILED/AUTH", "text-red-500 font-bold");
                 }
+            });
 
-                metadataLog.innerHTML = output;
-                metaStatus.innerText = "PARSER_SUCCESS";
+            injectPoolIntoGrid(masterAggregationPool);
+        });
+
+        function updateStatus(element, text, classes) {
+            element.innerText = `${element.id.replace('status-', 'TARGET_').toUpperCase()}: ${text}`;
+            element.className = text.includes('FAILED') ? "text-red-500 font-bold" : classes;
+        }
+
+        // Render compilation block onto HTML Document nodes
+        function injectPoolIntoGrid(pool) {
+            if (pool.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            totalCount.innerText = pool.length;
+            pool.forEach(match => {
+                const card = document.createElement('div');
+                card.className = "result-card bg-zinc-900/40 border border-zinc-800/80 rounded p-3 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-zinc-900/90";
+                card.innerHTML = `
+                    <div>
+                        <div class="w-full h-36 bg-zinc-950 rounded border border-zinc-900 overflow-hidden mb-2 relative">
+                            <img src="${match.image}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x200/121214/52525b?text=Binary+Index+Locked'">
+                            <span class="absolute top-2 right-2 text-[8px] bg-zinc-950/90 text-zinc-400 border border-zinc-800 px-1 py-0.5 rounded font-mono uppercase tracking-widest">${match.sourceEngine}</span>
+                        </div>
+                        <div class="text-[11px] font-bold text-zinc-300 truncate mb-0.5">${match.title}</div>
+                        <p class="text-[10px] font-mono text-zinc-500 truncate mb-2">${match.metaText}</p>
+                    </div>
+                    <a href="${match.link}" target="_blank" class="w-full text-center bg-zinc-800/50 hover:bg-blue-600 hover:text-white transition-all text-zinc-300 font-mono text-[10px] py-2 border border-zinc-800 rounded uppercase tracking-wider block">
+                        Intercept Platform Profile
+                    </a>
+                `;
+                resultsGrid.appendChild(card);
             });
         }
 
-        // DMS conversion math string structure mapping
-        function convertDMSToDD(degrees, direction) {
-            let dd = degrees[0] + degrees[1]/60 + degrees[2]/3600;
-            if (direction === "S" || direction === "W") dd = dd * -1;
-            return dd;
+        /* ENGINE API EXECUTION LAYER 1: FACECHECK */
+        async function runFaceCheckPipeline(file, key) {
+            let form = new FormData();
+            form.append('images', file);
+            const upload = await fetch('https://facecheck.id/api/upload_pic', { method: 'POST', headers: { 'Authorization': key }, body: form });
+            const data = await upload.json();
+            if (!data.id) throw new Error(data.error || "Handshake reject.");
+
+            const query = await fetch(`https://facecheck.id/api/search?id=${data.id}`, { method: 'POST', headers: { 'Authorization': key }});
+            const out = await query.json();
+            return (out.output?.items || []).map(i => ({
+                image: i.image_base64 || i.url,
+                title: i.site || "Social Account Intercept",
+                metaText: `Confidence Density: ${i.score}%`,
+                link: i.url,
+                sourceEngine: "FACECHECK"
+            }));
         }
 
-        // Reset App Cache state
-        clearBtn.addEventListener('click', () => {
-            urlInput.value = '';
-            preview.src = '';
-            preview.classList.add('hidden');
-            dropzoneContent.classList.remove('hidden');
-            fileInput.value = '';
-            coordBadge.classList.add('hidden');
-            metadataLog.innerHTML = `<span class="text-zinc-600">[info]</span> Awaiting target initialization... drop file to analyze deep camera strings, dates, and embedded geolocations.`;
-            metaStatus.innerText = "PARSER_IDLE";
-        });
+        /* ENGINE API EXECUTION LAYER 2: SERPER GOOGLE LENS */
+        async function runSerperLensPipeline(file, key) {
+            const base64 = await new Promise((res) => {
+                const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(file);
+            });
+            const res = await fetch('https://google.serper.dev/lens', {
+                method: 'POST',
+                headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "image": base64 })
+            });
+            const out = await res.json();
+            return (out.visualMatches || []).map(m => ({
+                image: m.thumbnail,
+                title: m.title || "Indexed Visual Element Match",
+                metaText: "Source Index Address Located",
+                link: m.link || "#",
+                sourceEngine: "GOOGLE_LENS"
+            }));
+        }
 
-        // Smart Router Search Functions
-        function launchSearch(engine) {
-            const rawUrl = urlInput.value.trim();
-            const targetUrl = encodeURIComponent(rawUrl);
-            let endpoint = '';
+        /* ENGINE API EXECUTION LAYER 3: PIMEYES EXPLICIT STRUCTURE */
+        async function runPimEyesPipeline(file, key) {
+            let form = new FormData();
+            form.append('image', file);
+            const res = await fetch('https://pimeyes.com/api/v1/search/run', { method: 'POST', headers: { 'Authorization': `Bearer ${key}` }, body: form });
+            const out = await res.json();
+            return (out.results || []).map(r => ({
+                image: r.thumbnail,
+                title: "Deep Forum / Independent Article Post Match",
+                metaText: `Database Fingerprint Match`,
+                link: r.pageUrl,
+                sourceEngine: "PIMEYES"
+            }));
+        }
 
-            switch (engine) {
-                case 'facecheck':
-                    endpoint = `https://facecheck.id/`;
-                    break;
-                case 'pimeyes':
-                    endpoint = `https://pimeyes.com/`;
-                    break;
-                case 'yandex':
-                    endpoint = targetUrl ? `https://yandex.com/images/search?rpt=imageview&url=${targetUrl}` : `https://yandex.com/images/`;
-                    break;
-                case 'google':
-                    endpoint = targetUrl ? `https://lens.google.com/uploadbyurl?url=${targetUrl}` : `https://lens.google.com/`;
-                    break;
-                case 'bing':
-                    endpoint = targetUrl ? `https://www.bing.com/images/searchbyimage?cbir=sbi&imgurl=${targetUrl}` : `https://www.bing.com/visualsearch`;
-                    break;
-            }
-            window.open(endpoint, '_blank');
+        /* LOCALIZED MATRIX PARSER HARVEST SIMULATOR */
+        function runMatrixSandboxSimulation() {
+            return new Promise((res) => {
+                setTimeout(() => {
+                    res([
+                        { image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80", title: "Facebook // Public Domain Target Post", metaText: "Confidence Score: 98.4%", link: "https://facebook.com", sourceEngine: "FACECHECK" },
+                        { image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80", title: "LinkedIn // Enterprise Personnel Node", metaText: "Identical Structural Configuration Match", link: "https://linkedin.com", sourceEngine: "GOOGLE_LENS" },
+                        { image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80", title: "Reddit // Isolated Thread Image String", metaText: "Deep Index Scan Detected Instance", link: "https://reddit.com", sourceEngine: "PIMEYES" }
+                    ]);
+                }, 1400);
+            });
         }
     </script>
 </body>
