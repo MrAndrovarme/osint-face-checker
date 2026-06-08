@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NullOS // Advanced Image Recon Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <style>
+        body {
+            background-color: #070709;
+            color: #d4d4d8;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .glow-blue:focus-within {
+            border-color: #2563eb;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.3);
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-6">
+
+    <header class="w-full max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 pb-4 mb-6 gap-2">
+        <div>
+            <h1 class="text-xl font-bold tracking-widest text-blue-500">NULL_OS // IMAGE_RECON_V2</h1>
+            <p class="text-xs text-zinc-500">Biometric Tracking & Exif Metadata Extraction Module</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div id="meta-status" class="text-[10px] text-zinc-500 font-mono">PARSER_IDLE</div>
+            <span class="px-2.5 py-0.5 rounded text-xs font-mono bg-blue-950/40 text-blue-400 border border-blue-900/50 animate-pulse">
+                SYS_ACTIVE
+            </span>
+        </div>
+    </header>
+
+    <main class="w-full max-w-6xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-7 flex flex-col gap-4">
+            
+            <div id="dropzone" class="flex-grow border border-zinc-800 rounded relative flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-950/5 transition-all min-h-[280px]">
+                <div id="dropzone-content" class="space-y-3 z-10">
+                    <div class="w-12 h-12 rounded bg-zinc-900 flex items-center justify-center mx-auto border border-zinc-800">
+                        <svg class="h-6 w-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    <div class="text-xs tracking-wide">
+                        <span class="text-blue-400 font-bold">DRAG TARGET FILE HERE</span> OR CLICK TO MOUNT
+                    </div>
+                    <p class="text-[10px] text-zinc-600 uppercase">RAW Image Binaries Accepted (JPG, PNG, WEBP)</p>
+                </div>
+                <input type="file" id="file-input" class="hidden" accept="image/*">
+                <img id="preview" class="hidden max-h-60 rounded border border-zinc-800 mx-auto object-contain z-10 shadow-2xl">
+            </div>
+
+            <div class="bg-zinc-950 border border-zinc-800 rounded p-4">
+                <div class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 border-b border-zinc-900 pb-2 flex justify-between">
+                    <span>⚡ Extracted Exif Metadata Intel</span>
+                    <span id="coord-badge" class="text-emerald-500 hidden text-[10px]">GPS DATA FOUND</span>
+                </div>
+                <div id="metadata-log" class="text-[11px] font-mono text-zinc-500 space-y-1 max-h-32 overflow-y-auto terminal-scroll">
+                    <span class="text-zinc-600">[info]</span> Awaiting target initialization... drop file to analyze deep camera strings, dates, and embedded geolocations.
+                </div>
+            </div>
+
+            <div class="bg-zinc-900/30 border border-zinc-800 rounded p-3 glow-blue">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1.5">Direct URL Mapping (Required for Automated External Queries)</label>
+                <div class="flex gap-2">
+                    <input type="text" id="url-input" placeholder="https://domain.com/path/to/target.jpg" class="flex-grow bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 text-zinc-300 font-mono">
+                    <button id="clear-btn" class="px-3 bg-zinc-800 hover:bg-zinc-700 text-xs rounded transition-colors uppercase tracking-wider text-zinc-400">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            
+            <div class="bg-zinc-900/20 border border-zinc-800 rounded p-4">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-red-500 mb-3 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
+                    TIER 1 // Biometric Social Engines
+                </h2>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
+                        <div>
+                            <div class="text-xs font-bold text-zinc-300">FaceCheck.ID</div>
+                            <div class="text-[10px] text-zinc-600">Maps faces straight to Social Profiles</div>
+                        </div>
+                        <button onclick="launchSearch('facecheck')" class="px-3 py-1 bg-red-950/40 hover:bg-red-900/60 border border-red-900 text-red-400 font-bold text-[10px] rounded transition-all uppercase">Launch</button>
+                    </div>
+                    <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
+                        <div>
+                            <div class="text-xs font-bold text-zinc-300">PimEyes Radar</div>
+                            <div class="text-[10px] text-zinc-600">Deep web blog, forum, and article crawler</div>
+                        </div>
+                        <button onclick="launchSearch('pimeyes')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 font-bold text-[10px] rounded transition-all uppercase">Launch</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-zinc-900/20 border border-zinc-800 rounded p-4 flex-grow flex flex-col justify-between">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-3">TIER 2 // Deep Reverse Scanners</h2>
+                    <div class="space-y-2">
+                        <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-bold text-zinc-300 block">Yandex Visual AI</span>
+                                <span class="text-[10px] text-zinc-600">Highest non-social matching accuracy</span>
+                            </div>
+                            <button onclick="launchSearch('yandex')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] rounded transition-all uppercase">Query</button>
+                        </div>
+                        <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-bold text-zinc-300 block">Google Lens Engine</span>
+                                <span class="text-[10px] text-zinc-600">Matches outfits, locations, items</span>
+                            </div>
+                            <button onclick="launchSearch('google')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-[10px] rounded transition-all uppercase">Query</button>
+                        </div>
+                        <div class="p-2.5 bg-zinc-950 border border-zinc-900 rounded flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-bold text-zinc-300 block">Bing Visual Recon</span>
+                                <span class="text-[10px] text-zinc-600">Scrapes secondary isolated site indexes</span>
+                            </div>
+                            <button onclick="launchSearch('bing')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-[10px] rounded transition-all uppercase">Query</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-2.5 bg-zinc-950 border border-zinc-900 rounded text-[10px] text-zinc-600 font-mono space-y-1">
+                    <div class="text-zinc-400 font-bold uppercase text-[9px] tracking-wider">Operational Sequence:</div>
+                    <p>1. Drop photo to check hidden device metadata.</p>
+                    <p>2. Paste web link if performing bulk multi-engine automated queries.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full max-w-6xl mx-auto text-center text-[9px] text-zinc-700 mt-6 border-t border-zinc-900 pt-4 font-mono tracking-widest">
+        SYSTEM: NULLOS_INTEL_MODULE // CONSOLE ENGAGED
+    </footer>
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const urlInput = document.getElementById('url-input');
+        const preview = document.getElementById('preview');
+        const dropzoneContent = document.getElementById('dropzone-content');
+        const clearBtn = document.getElementById('clear-btn');
+        const metadataLog = document.getElementById('metadata-log');
+        const metaStatus = document.getElementById('meta-status');
+        const coordBadge = document.getElementById('coord-badge');
+
+        // Click trigger
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        // Drag behaviors
+        ['dragenter', 'dragover'].forEach(name => {
+            dropzone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('border-blue-500', 'bg-blue-950/10');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(name => {
+            dropzone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('border-blue-500', 'bg-blue-950/10');
+            });
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length) processFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) processFile(e.target.files[0]);
+        });
+
+        // Core File Processor and EXIF Parser
+        function processFile(file) {
+            if (!file.type.startsWith('image/')) return;
+            metaStatus.innerText = "PROCESSING_FILE...";
+            coordBadge.classList.add('hidden');
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+                dropzoneContent.classList.add('hidden');
+                
+                // Fire Exif Extraction
+                EXTRACT_EXIF_DATA(file);
+            };
+        }
+
+        function EXTRACT_EXIF_DATA(file) {
+            EXIF.getData(file, function() {
+                const allData = EXIF.getAllTags(this);
+                if (Object.keys(allData).length === 0) {
+                    metadataLog.innerHTML = `<span class="text-yellow-600">[warning]</span> Binary stripped clean. No embedded Exif header data found inside file strings.`;
+                    metaStatus.innerText = "PARSER_CLEAN";
+                    return;
+                }
+
+                let output = `<span class="text-blue-500">[extracted]</span> Analysis successful:<br>`;
+                if (allData.Make || allData.Model) output += ` > DEVICE: ${allData.Make || ''} ${allData.Model || ''}<br>`;
+                if (allData.DateTime) output += ` > TIMESTAMP: ${allData.DateTime}<br>`;
+                if (allData.Software) output += ` > SOFTWARE_EDITS: ${allData.Software}<br>`;
+
+                // Check GPS coordinates
+                if (allData.GPSLatitude && allData.GPSLongitude) {
+                    coordBadge.classList.remove('hidden');
+                    const lat = convertDMSToDD(allData.GPSLatitude, allData.GPSLatitudeRef);
+                    const lon = convertDMSToDD(allData.GPSLongitude, allData.GPSLongitudeRef);
+                    output += ` <span class="text-emerald-400">>>>> COORDS LOCATED: ${lat.toFixed(6)}, ${lon.toFixed(6)}</span><br>`;
+                    output += ` > MAP LINK: <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" class="text-blue-400 underline hover:text-blue-300">Open Satellite Map Position</a><br>`;
+                } else {
+                    output += ` > GEOLOCATION: Missing or stripped from headers.<br>`;
+                }
+
+                metadataLog.innerHTML = output;
+                metaStatus.innerText = "PARSER_SUCCESS";
+            });
+        }
+
+        // DMS conversion math string structure mapping
+        function convertDMSToDD(degrees, direction) {
+            let dd = degrees[0] + degrees[1]/60 + degrees[2]/3600;
+            if (direction === "S" || direction === "W") dd = dd * -1;
+            return dd;
+        }
+
+        // Reset App Cache state
+        clearBtn.addEventListener('click', () => {
+            urlInput.value = '';
+            preview.src = '';
+            preview.classList.add('hidden');
+            dropzoneContent.classList.remove('hidden');
+            fileInput.value = '';
+            coordBadge.classList.add('hidden');
+            metadataLog.innerHTML = `<span class="text-zinc-600">[info]</span> Awaiting target initialization... drop file to analyze deep camera strings, dates, and embedded geolocations.`;
+            metaStatus.innerText = "PARSER_IDLE";
+        });
+
+        // Smart Router Search Functions
+        function launchSearch(engine) {
+            const rawUrl = urlInput.value.trim();
+            const targetUrl = encodeURIComponent(rawUrl);
+            let endpoint = '';
+
+            switch (engine) {
+                case 'facecheck':
+                    endpoint = `https://facecheck.id/`;
+                    break;
+                case 'pimeyes':
+                    endpoint = `https://pimeyes.com/`;
+                    break;
+                case 'yandex':
+                    endpoint = targetUrl ? `https://yandex.com/images/search?rpt=imageview&url=${targetUrl}` : `https://yandex.com/images/`;
+                    break;
+                case 'google':
+                    endpoint = targetUrl ? `https://lens.google.com/uploadbyurl?url=${targetUrl}` : `https://lens.google.com/`;
+                    break;
+                case 'bing':
+                    endpoint = targetUrl ? `https://www.bing.com/images/searchbyimage?cbir=sbi&imgurl=${targetUrl}` : `https://www.bing.com/visualsearch`;
+                    break;
+            }
+            window.open(endpoint, '_blank');
+        }
+    </script>
+</body>
+</html>
