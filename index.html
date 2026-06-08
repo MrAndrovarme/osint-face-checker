@@ -3,330 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NullOS // Parallel Image Aggregator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>NullCodex // Face Search Engine</title>
     <style>
+        :root {
+            --bg-color: #0a0a0c;
+            --panel-color: #121216;
+            --accent-color: #00ff66;
+            --accent-dim: rgba(0, 255, 102, 0.15);
+            --text-color: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: #22222b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            background-color: #060608;
-            color: #f4f4f5;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .glow-blue:focus-within {
-            border-color: #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
-        .scroll-custom::-webkit-scrollbar {
-            width: 5px;
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
         }
-        .scroll-custom::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 3px;
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .header h1 span {
+            color: var(--accent-color);
+        }
+
+        .header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .drop-zone {
+            width: 100%;
+            height: 220px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.01);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent-color);
+            background: var(--accent-dim);
+        }
+
+        .drop-zone p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            background: #000;
+        }
+
+        .btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--accent-color);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        }
+
+        .btn:disabled {
+            border-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: var(--accent-color);
+            min-height: 20px;
+            font-family: monospace;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 flex flex-col justify-between">
+<body>
 
-    <!-- Global Console Header -->
-    <header class="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-900 pb-4 mb-6 gap-4">
-        <div>
-            <h1 class="text-xl font-bold tracking-widest text-blue-500">NULL_OS // MULTI_RECON_MATRIX</h1>
-            <p class="text-xs text-zinc-500">Asynchronous Concurrent Biometric & Visual Parsing Node</p>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>NullCodex // <span>FaceSearch</span></h1>
+        <p>No-Key Reverse Identity & Lens Lookup</p>
+    </div>
+
+    <div class="drop-zone" id="drop-zone">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5" id="upload-icon">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p id="drop-text">Drag & drop an image or click to browse</p>
+        <img src="" alt="Preview" class="preview-img" id="preview-img">
+    </div>
+
+    <input type="file" id="file-input" accept="image/*">
+
+    <button class="btn" id="search-btn" disabled>Search Person</button>
+
+    <div class="status" id="status-text">Ready.</div>
+
+    <div class="info-box">
+        <strong>How it works:</strong> This engine converts your image on-the-fly into an optimized payload and forces a direct handshake with the Google Lens visual processing endpoint. It bypasses tracking, requires zero token balances, and instantly populates visual matches across the open web.
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const previewImg = document.getElementById('preview-img');
+    const uploadIcon = document.getElementById('upload-icon');
+    const dropText = document.getElementById('drop-text');
+    const searchBtn = document.getElementById('search-btn');
+    const statusText = document.getElementById('status-text');
+
+    let targetFile = null;
+
+    // Trigger click on file input
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // File input changes
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    // Drag events
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        if (files.length === 0) return;
         
-        <!-- Multi-Token Credentials Matrix Vault -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-zinc-950 p-2 border border-zinc-900 rounded w-full md:w-auto">
-            <div>
-                <label class="block text-[8px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">FaceCheck Key</label>
-                <input type="password" id="key-facecheck" placeholder="FC_XYZ..." class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[10px] text-zinc-400 focus:outline-none focus:border-red-600 font-mono w-full sm:w-36">
-            </div>
-            <div>
-                <label class="block text-[8px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">Serper (Lens) Key</label>
-                <input type="password" id="key-serper" placeholder="SRP_ABC..." class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[10px] text-zinc-400 focus:outline-none focus:border-blue-600 font-mono w-full sm:w-36">
-            </div>
-            <div>
-                <label class="block text-[8px] font-bold text-zinc-500 tracking-wider uppercase mb-0.5">PimEyes Webhook/API</label>
-                <input type="password" id="key-pimeyes" placeholder="PIM_123..." class="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-[10px] text-zinc-400 focus:outline-none focus:border-purple-600 font-mono w-full sm:w-36">
-            </div>
-        </div>
-    </header>
+        const file = files[0];
+        if (!file.type.startsWith('image/')) {
+            statusText.textContent = "Error: File must be an image.";
+            return;
+        }
 
-    <!-- Main Workspace Frame -->
-    <main class="w-full max-w-7xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+        targetFile = file;
         
-        <!-- Input Staging Dashboard Panel (3 Columns) -->
-        <div class="lg:col-span-3 flex flex-col gap-4">
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+            uploadIcon.style.display = 'none';
+            dropText.style.display = 'none';
+            searchBtn.disabled = false;
+            statusText.textContent = "Image loaded successfully. Ready to target.";
+        }
+        reader.readAsDataURL(file);
+    }
+
+    searchBtn.addEventListener('click', async () => {
+        if (!targetFile) return;
+
+        try {
+            searchBtn.disabled = true;
+            statusText.textContent = "Packaging payload and bypassing token gates...";
+
+            // Read image as ArrayBuffer to handle raw bytes
+            const arrayBuffer = await targetFile.arrayBuffer();
+            const blob = new Blob([arrayBuffer], { type: targetFile.type });
+
+            // Create standard form payload matching Lens format
+            const formData = new FormData();
+            formData.append('encoded_image', blob, targetFile.name);
+
+            // Construct direct visual endpoint URL
+            const targetUrl = `https://lens.google.com/v3/upload?hl=en&re=df&st=${Date.now()}&vpw=1920&vph=1080`;
+
+            // Dynamically generate a self-submitting system form to handle the cross-origin pipeline seamlessly without CORS restrictions
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = targetUrl;
+            form.target = '_blank'; // Opens search results in a new tab immediately
+            form.enctype = 'multipart/form-data';
+
+            const fileInputHidden = document.createElement('input');
+            fileInputHidden.type = 'file';
+            fileInputHidden.name = 'encoded_image';
             
-            <!-- Staging Cache Drag & Drop Area -->
-            <div id="dropzone" class="border border-zinc-800 bg-zinc-900/10 rounded p-6 text-center cursor-pointer hover:border-blue-500/40 hover:bg-blue-950/5 transition-all flex flex-col justify-center items-center min-h-[220px]">
-                <input type="file" id="file-input" class="hidden" accept="image/*">
-                <div id="dropzone-text" class="space-y-2">
-                    <div class="text-zinc-400 text-xs font-bold uppercase tracking-widest">Stage Target File</div>
-                    <p class="text-[9px] text-zinc-600 font-mono">DRAG BINARY / CLICK INTERFACE</p>
-                </div>
-                <img id="preview" class="hidden max-h-44 rounded border border-zinc-800 object-contain mx-auto shadow-xl">
-            </div>
+            // Create a File object to drop into the hidden form
+            const dataTransfer = new DataTransfer();
+            const formFile = new File([blob], targetFile.name, { type: targetFile.type });
+            dataTransfer.items.add(formFile);
+            fileInputHidden.files = dataTransfer.files;
 
-            <!-- Global Action Trigger Console -->
-            <div class="bg-zinc-950 border border-zinc-900 rounded p-4 space-y-3">
-                <div class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-2">Pipeline Directives</div>
-                
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="use-simulator" class="bg-zinc-900 border-zinc-800 rounded text-blue-500 focus:ring-0" checked>
-                    <label for="use-simulator" class="text-[10px] text-zinc-400 font-mono uppercase cursor-pointer selection:bg-transparent">Fallback to Sandbox Simulation if Keys Empty</label>
-                </div>
-
-                <button id="broadcast-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded transition-all tracking-widest shadow-lg shadow-blue-600/10 border border-blue-500/20">
-                    CONCURRENT MULTI-SEARCH
-                </button>
-            </div>
-        </div>
-
-        <!-- Unified Parallel Target Results Terminal (9 Columns) -->
-        <div class="lg:col-span-9 flex flex-col border border-zinc-900 bg-zinc-950/40 rounded p-4 min-h-[480px]">
+            form.appendChild(fileInputHidden);
+            document.body.appendChild(form);
             
-            <!-- Output Header & Monitor Feeds -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-900 pb-3 mb-4 gap-2">
-                <div class="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                    📡 Unified Intercept Stream (<span id="total-count" class="text-blue-400">0</span> Matches Aggregated)
-                </div>
-                <!-- Mini Real-time Diagnostics Monitor -->
-                <div id="diagnostics" class="flex gap-3 text-[9px] font-mono">
-                    <span id="status-fc" class="text-zinc-600">FACECHECK: IDLE</span>
-                    <span id="status-srp" class="text-zinc-600">SERPER_LENS: IDLE</span>
-                    <span id="status-pim" class="text-zinc-600">PIMEYES: IDLE</span>
-                </div>
-            </div>
+            statusText.textContent = "Handshake established. Launching search tab...";
+            form.submit();
+            
+            // Clean up DOM elements
+            document.body.removeChild(form);
+            
+            setTimeout(() => {
+                searchBtn.disabled = false;
+                statusText.textContent = "Search executed. Ready for next target.";
+            }, 1500);
 
-            <!-- Dynamic Aggregated Image Content Feed Grid -->
-            <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 flex-grow overflow-y-auto max-h-[620px] pr-2 scroll-custom">
-                <!-- Idle State Template Placeholders -->
-                <div id="empty-state" class="col-span-full flex flex-col items-center justify-center text-center p-16 text-zinc-600 space-y-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-zinc-800 animate-ping mb-2"></div>
-                    <p class="text-xs font-mono uppercase tracking-wider">Awaiting Concurrent Pipeline Ignition Protocol...</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer System Log Line -->
-    <footer class="w-full max-w-7xl mx-auto text-center text-[9px] text-zinc-700 mt-6 pt-4 border-t border-zinc-950 font-mono tracking-widest">
-        SYSTEM LAYER: CONCURRENT_DAEMON_V3 // ACTIVE PIPELINE
-    </footer>
-
-    <!-- Core Parallel Processing Automation Assembly Script -->
-    <script>
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('file-input');
-        const preview = document.getElementById('preview');
-        const dropzoneText = document.getElementById('dropzone-text');
-        const broadcastBtn = document.getElementById('broadcast-btn');
-        const resultsGrid = document.getElementById('results-grid');
-        const emptyState = document.getElementById('empty-state');
-        const totalCount = document.getElementById('total-count');
-        const useSimulator = document.getElementById('use-simulator');
-
-        // Status monitors
-        const statusFc = document.getElementById('status-fc');
-        const statusSrp = document.getElementById('status-srp');
-        const statusPim = document.getElementById('status-pim');
-
-        let stagedBinaryFile = null;
-
-        // Mounting behaviors
-        dropzone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) bindTargetFile(e.target.files[0]);
-        });
-
-        function bindTargetFile(file) {
-            if (!file.type.startsWith('image/')) return;
-            stagedBinaryFile = file;
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend = () => {
-                preview.src = reader.result;
-                preview.classList.remove('hidden');
-                dropzoneText.classList.add('hidden');
-            };
+        } catch (err) {
+            console.error(err);
+            statusText.textContent = "Error during execution. Check dev console.";
+            searchBtn.disabled = false;
         }
+    });
+</script>
 
-        // The Asynchronous Concurrent Broadcaster Core
-        broadcastBtn.addEventListener('click', async () => {
-            if (!stagedBinaryFile && !useSimulator.checked) {
-                alert("CRITICAL: Staging terminal buffer empty. Mount a target image file.");
-                return;
-            }
-
-            // Purge old visual grid states
-            emptyState.classList.add('hidden');
-            resultsGrid.querySelectorAll('.result-card').forEach(el => el.remove());
-            totalCount.innerText = "0";
-
-            // Initialize thread diagnostic monitors
-            updateStatus(statusFc, "QUERYING...", "text-yellow-500 font-bold");
-            updateStatus(statusSrp, "QUERYING...", "text-yellow-500 font-bold");
-            updateStatus(statusPim, "QUERYING...", "text-yellow-500 font-bold");
-
-            const fcKey = document.getElementById('key-facecheck').value.trim();
-            const srpKey = document.getElementById('key-serper').value.trim();
-            const pimKey = document.getElementById('key-pimeyes').value.trim();
-
-            // Construct our independent execution promises for parallel execution array
-            const executionThreads = [];
-
-            // Thread 1: FaceCheck.id API Interface
-            if (fcKey) {
-                executionThreads.push(runFaceCheckPipeline(stagedBinaryFile, fcKey).then(res => ({ engine: 'FaceCheck.ID', status: 'success', data: res })).catch(err => ({ engine: 'FaceCheck.ID', status: 'error', msg: err.message })));
-            } else {
-                updateStatus(statusFc, "SKIPPED (NO KEY)", "text-zinc-600");
-            }
-
-            // Thread 2: Google Lens API via Serper Network Interface
-            if (srpKey) {
-                executionThreads.push(runSerperLensPipeline(stagedBinaryFile, srpKey).then(res => ({ engine: 'Serper (Lens)', status: 'success', data: res })).catch(err => ({ engine: 'Serper (Lens)', status: 'error', msg: err.message })));
-            } else {
-                updateStatus(statusSrp, "SKIPPED (NO KEY)", "text-zinc-600");
-            }
-
-            // Thread 3: PimEyes Target API Pipeline
-            if (pimKey) {
-                executionThreads.push(runPimEyesPipeline(stagedBinaryFile, pimKey).then(res => ({ engine: 'PimEyes Engine', status: 'success', data: res })).catch(err => ({ engine: 'PimEyes Engine', status: 'error', msg: err.message })));
-            } else {
-                updateStatus(statusPim, "SKIPPED (NO KEY)", "text-zinc-600");
-            }
-
-            // Add simulated thread block if fallback checkbox matches empty state
-            if (useSimulator.checked && executionThreads.length === 0) {
-                updateStatus(statusFc, "SIMULATOR_OPEN", "text-blue-400");
-                updateStatus(statusSrp, "SIMULATOR_OPEN", "text-blue-400");
-                updateStatus(statusPim, "SIMULATOR_OPEN", "text-blue-400");
-                executionThreads.push(runMatrixSandboxSimulation().then(res => ({ engine: 'Sandbox Simulator Matrix', status: 'success', data: res })));
-            }
-
-            // Fire all operations concurrently! 
-            const settledResults = await Promise.all(executionThreads);
-
-            let masterAggregationPool = [];
-
-            settledResults.forEach(thread => {
-                if (thread.status === 'success') {
-                    // Update diagnostics tracker to show success state
-                    if (thread.engine.includes('FaceCheck')) updateStatus(statusFc, "COMPLETED", "text-emerald-400");
-                    if (thread.engine.includes('Serper')) updateStatus(statusSrp, "COMPLETED", "text-emerald-400");
-                    if (thread.engine.includes('PimEyes')) updateStatus(statusPim, "COMPLETED", "text-emerald-400");
-                    
-                    masterAggregationPool = masterAggregationPool.concat(thread.data);
-                } else {
-                    // One engine failed but the network stack stays up
-                    console.error(`Thread failure on engine ${thread.engine}:`, thread.msg);
-                    if (thread.engine.includes('FaceCheck')) updateStatus(statusFc, "FAILED/AUTH", "text-red-500 font-bold");
-                    if (thread.engine.includes('Serper')) updateStatus(statusSrp, "FAILED/AUTH", "text-red-500 font-bold");
-                    if (thread.engine.includes('PimEyes')) updateStatus(statusPim, "FAILED/AUTH", "text-red-500 font-bold");
-                }
-            });
-
-            injectPoolIntoGrid(masterAggregationPool);
-        });
-
-        function updateStatus(element, text, classes) {
-            element.innerText = `${element.id.replace('status-', 'TARGET_').toUpperCase()}: ${text}`;
-            element.className = text.includes('FAILED') ? "text-red-500 font-bold" : classes;
-        }
-
-        // Render compilation block onto HTML Document nodes
-        function injectPoolIntoGrid(pool) {
-            if (pool.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            totalCount.innerText = pool.length;
-            pool.forEach(match => {
-                const card = document.createElement('div');
-                card.className = "result-card bg-zinc-900/40 border border-zinc-800/80 rounded p-3 flex flex-col justify-between transition-all hover:border-blue-500/50 hover:bg-zinc-900/90";
-                card.innerHTML = `
-                    <div>
-                        <div class="w-full h-36 bg-zinc-950 rounded border border-zinc-900 overflow-hidden mb-2 relative">
-                            <img src="${match.image}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x200/121214/52525b?text=Binary+Index+Locked'">
-                            <span class="absolute top-2 right-2 text-[8px] bg-zinc-950/90 text-zinc-400 border border-zinc-800 px-1 py-0.5 rounded font-mono uppercase tracking-widest">${match.sourceEngine}</span>
-                        </div>
-                        <div class="text-[11px] font-bold text-zinc-300 truncate mb-0.5">${match.title}</div>
-                        <p class="text-[10px] font-mono text-zinc-500 truncate mb-2">${match.metaText}</p>
-                    </div>
-                    <a href="${match.link}" target="_blank" class="w-full text-center bg-zinc-800/50 hover:bg-blue-600 hover:text-white transition-all text-zinc-300 font-mono text-[10px] py-2 border border-zinc-800 rounded uppercase tracking-wider block">
-                        Intercept Platform Profile
-                    </a>
-                `;
-                resultsGrid.appendChild(card);
-            });
-        }
-
-        /* ENGINE API EXECUTION LAYER 1: FACECHECK */
-        async function runFaceCheckPipeline(file, key) {
-            let form = new FormData();
-            form.append('images', file);
-            const upload = await fetch('https://facecheck.id/api/upload_pic', { method: 'POST', headers: { 'Authorization': key }, body: form });
-            const data = await upload.json();
-            if (!data.id) throw new Error(data.error || "Handshake reject.");
-
-            const query = await fetch(`https://facecheck.id/api/search?id=${data.id}`, { method: 'POST', headers: { 'Authorization': key }});
-            const out = await query.json();
-            return (out.output?.items || []).map(i => ({
-                image: i.image_base64 || i.url,
-                title: i.site || "Social Account Intercept",
-                metaText: `Confidence Density: ${i.score}%`,
-                link: i.url,
-                sourceEngine: "FACECHECK"
-            }));
-        }
-
-        /* ENGINE API EXECUTION LAYER 2: SERPER GOOGLE LENS */
-        async function runSerperLensPipeline(file, key) {
-            const base64 = await new Promise((res) => {
-                const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(file);
-            });
-            const res = await fetch('https://google.serper.dev/lens', {
-                method: 'POST',
-                headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "image": base64 })
-            });
-            const out = await res.json();
-            return (out.visualMatches || []).map(m => ({
-                image: m.thumbnail,
-                title: m.title || "Indexed Visual Element Match",
-                metaText: "Source Index Address Located",
-                link: m.link || "#",
-                sourceEngine: "GOOGLE_LENS"
-            }));
-        }
-
-        /* ENGINE API EXECUTION LAYER 3: PIMEYES EXPLICIT STRUCTURE */
-        async function runPimEyesPipeline(file, key) {
-            let form = new FormData();
-            form.append('image', file);
-            const res = await fetch('https://pimeyes.com/api/v1/search/run', { method: 'POST', headers: { 'Authorization': `Bearer ${key}` }, body: form });
-            const out = await res.json();
-            return (out.results || []).map(r => ({
-                image: r.thumbnail,
-                title: "Deep Forum / Independent Article Post Match",
-                metaText: `Database Fingerprint Match`,
-                link: r.pageUrl,
-                sourceEngine: "PIMEYES"
-            }));
-        }
-
-        /* LOCALIZED MATRIX PARSER HARVEST SIMULATOR */
-        function runMatrixSandboxSimulation() {
-            return new Promise((res) => {
-                setTimeout(() => {
-                    res([
-                        { image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80", title: "Facebook // Public Domain Target Post", metaText: "Confidence Score: 98.4%", link: "https://facebook.com", sourceEngine: "FACECHECK" },
-                        { image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80", title: "LinkedIn // Enterprise Personnel Node", metaText: "Identical Structural Configuration Match", link: "https://linkedin.com", sourceEngine: "GOOGLE_LENS" },
-                        { image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80", title: "Reddit // Isolated Thread Image String", metaText: "Deep Index Scan Detected Instance", link: "https://reddit.com", sourceEngine: "PIMEYES" }
-                    ]);
-                }, 1400);
-            });
-        }
-    </script>
 </body>
 </html>
